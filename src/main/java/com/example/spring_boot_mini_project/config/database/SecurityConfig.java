@@ -30,10 +30,14 @@ public class SecurityConfig {
 //        this.customAuthProvider = customAuthProvider;
 //    }
 
+    private final StaticKeyAuthenticationFilter staticKeyAuthenticationFilter;
     private final AuthFilter authFilter;
+    private final LoggingFilter loggingFilter;
 
-    public SecurityConfig(AuthFilter authFilter) {
+    public SecurityConfig(StaticKeyAuthenticationFilter staticKeyAuthenticationFilter, AuthFilter authFilter, LoggingFilter loggingFilter) {
+        this.staticKeyAuthenticationFilter = staticKeyAuthenticationFilter;
         this.authFilter = authFilter;
+        this.loggingFilter = loggingFilter;
     }
 
 
@@ -48,6 +52,9 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(staticKeyAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Register Static Key Filter
+
                 .formLogin(withDefaults()
                 );
 
