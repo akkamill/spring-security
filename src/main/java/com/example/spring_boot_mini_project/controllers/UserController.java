@@ -20,13 +20,13 @@ public class UserController {
 
 
     @GetMapping("/get-all")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<UserEntity>> getAll() {
         return ResponseEntity.ok(userService.findAll());
     }
 
     @PostMapping("/add")
-    @PreAuthorize("hasAuthority('READ')")
+//    @PreAuthorize("hasAuthority('READ')")
     public ResponseEntity<UserEntity> add(@RequestBody UserEntity user) {
         userService.addUser(user);
         return ResponseEntity.ok().build();

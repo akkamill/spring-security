@@ -1,14 +1,13 @@
 package com.example.spring_boot_mini_project.entities;
 
 
+import com.example.spring_boot_mini_project.entities.security.AuthToken;
 import com.example.spring_boot_mini_project.entities.security.RoleEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity(name = "users_entity")
@@ -32,5 +31,8 @@ public class UserEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<RoleEntity> roles = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AuthToken> tokens = new ArrayList<>();
 
 }

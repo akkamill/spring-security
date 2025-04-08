@@ -14,6 +14,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,27 +24,33 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 public class SecurityConfig {
-
 //    private final CustomAuthProvider customAuthProvider;
 //
 //    public SecurityConfig(CustomAuthProvider customAuthProvider) {
 //        this.customAuthProvider = customAuthProvider;
 //    }
 
+    private final AuthFilter authFilter;
+
+    public SecurityConfig(AuthFilter authFilter) {
+        this.authFilter = authFilter;
+    }
+
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(
+                        SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/users/**").hasRole("ADMIN")
+//                        .requestMatchers("/users/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .httpBasic()
-                .and()
-                .formLogin(withDefaults())
-                .logout(logout -> logout.logoutSuccessUrl("/login?logout"))
-                .sessionManagement(session -> session.sessionCreationPolicy(
-                        SessionCreationPolicy.IF_REQUIRED));
+                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+                .formLogin(withDefaults()
+                );
+
         return http.build();
     }
 }
